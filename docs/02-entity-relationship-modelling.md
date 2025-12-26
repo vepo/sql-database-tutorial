@@ -288,7 +288,6 @@ ORDER BY e.id;
 "
 ```
 
-
 #### 7.2 Check Foreign Key Constraints
 
 ```sql
@@ -305,6 +304,103 @@ VALUES (999, 'Invalid Street', 'Nowhere', 'XX', '00000');
 "
 ```
 
+### 8. 🏗️ Generating Large Dataset for Performance Testing
+
+Generate 10,000 Employees
+
+```bash
+docker exec postgres-demo psql -U demo -d demo_db -c "SELECT generate_complete_employee_dataset(10000);"
+```
+
+### 9. 🔍 Creating Indexes for Efficient Name Queries
+
+Objective: Improve query performance by creating indexes on frequently searched columns.
+
+First, test query performance without an index:
+
+```bash
+docker exec postgres-demo psql -U demo -d demo_db -c "
+EXPLAIN ANALYZE SELECT * FROM tb_employee WHERE name = 'James';
+"
+```
+
+Expected Result: Shows a sequential scan with slower performance.
+
+```text
+                                                 QUERY PLAN                                                  
+-------------------------------------------------------------------------------------------------------------
+ Seq Scan on tb_employee  (cost=0.00..219.06 rows=67 width=50) (actual time=0.010..0.571 rows=67.00 loops=1)
+   Filter: ((name)::text = 'James'::text)
+   Rows Removed by Filter: 9938
+   Buffers: shared hit=94
+ Planning:
+   Buffers: shared hit=88
+ Planning Time: 0.591 ms
+ Execution Time: 0.605 ms
+(8 rows)
+```
+
+#### 9.2 Create Basic Index on Name Column
+
+Objective: Improve queries filtering by name only.
+
+```sql
+CREATE INDEX idx_employee_name ON tb_employee (name);
+```
+
+Docker Command: 
+
+```bash
+docker exec postgres-demo psql -U demo -d demo_db -c "
+CREATE INDEX idx_employee_name ON tb_employee (name);
+"
+```
+
+#### 9.3 Test Performance With Index
+
+After creating the index, test the same query:
+
+
+```bash
+docker exec postgres-demo psql -U demo -d demo_db -c "
+EXPLAIN ANALYZE SELECT * FROM tb_employee WHERE name = 'James';
+"
+```
+Expected Result: Shows a bitmap index scan with significantly improved performance.
+
+```text
+                                                          QUERY PLAN                                                           
+-------------------------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on tb_employee  (cost=4.80..96.24 rows=67 width=50) (actual time=0.019..0.060 rows=67.00 loops=1)
+   Recheck Cond: ((name)::text = 'James'::text)
+   Heap Blocks: exact=46
+   Buffers: shared hit=48
+   ->  Bitmap Index Scan on idx_employee_name  (cost=0.00..4.79 rows=67 width=0) (actual time=0.009..0.009 rows=67.00 loops=1)
+         Index Cond: ((name)::text = 'James'::text)
+         Index Searches: 1
+         Buffers: shared hit=2
+ Planning:
+   Buffers: shared hit=109
+ Planning Time: 0.351 ms
+ Execution Time: 0.097 ms
+(12 rows)
+```
+
+#### 9.4 Create Composite Index for Name and Surname
+
+Objective: Optimize queries that filter by both name AND surname.
+
+```sql
+CREATE INDEX idx_employee_name_surname ON tb_employee (name, surname);
+```
+
+Docker command:
+
+```bash
+docker exec postgres-demo psql -U demo -d demo_db -c "
+CREATE INDEX idx_employee_name_surname ON tb_employee (name, surname);
+"
+```
 
 ## 📊 Relationship Summary
 | Table                           | Relationship Type | Description                                              |
