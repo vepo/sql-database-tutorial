@@ -39,7 +39,3 @@ Open an issue or reach out via [GitHub Discussions](https://github.com/vepo/sql-
 ---
 
 _Keep querying, keep learning!_ 🐘
-
----
-
-Let me know if you'd like to add a `LICENSE` file, a `CONTRIBUTING.md`, or a `.gitignore` template as well!
