@@ -25,6 +25,11 @@ This repository is organized into modular lessons, each focusing on a key databa
 - Convert ER models into PostgreSQL tables
 - Explore relationships, cardinality, and normalization
 
+### 3. [SQL Tutorial: Database Navigation and Querying](./docs/03-sql-tutorial.md)
+- Master essential SQL operations from basic navigation to complex queries
+- Learn database exploration, querying techniques, and troubleshooting strategies
+- Practice with real-world examples and performance optimization
+
 ## 📄 **License**
 
 This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.

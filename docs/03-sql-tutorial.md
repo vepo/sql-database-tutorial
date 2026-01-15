@@ -1,5 +1,17 @@
 # SQL Tutorial: Database Navigation and Querying
 
+## 📋 Overview
+
+This module provides a comprehensive **SQL tutorial** covering essential database navigation, querying techniques, and practical examples using PostgreSQL. You'll learn how to explore databases, write efficient queries, and troubleshoot common issues through hands-on examples.
+
+Through this tutorial, you'll master:
+- Database exploration and navigation commands
+- Essential SQL query patterns and best practices
+- Complex joins, subqueries, and aggregations
+- Data manipulation operations (INSERT, UPDATE, DELETE)
+- Performance optimization techniques
+- Common pitfalls and troubleshooting strategies
+
 ## 🚀 Environment Setup
 
 ### Start the Environment
@@ -8,12 +20,13 @@ docker-compose -f docker/03-sql-docker-compose.yaml up -d
 ``` 
 
 ### Stop and Cleanup
-
 ```bash
 docker-compose -f docker/03-sql-docker-compose.yaml down -v
 ```
 
-## 1. Connecting to a Database
+## 🧭 Database Navigation Fundamentals
+
+### 1. Connecting to a Database
 
 Use Docker to connect to your PostgreSQL container:
 
@@ -21,14 +34,14 @@ Use Docker to connect to your PostgreSQL container:
 docker exec -it postgres-demo psql -U demo -d demo_db
 ```
 
-## 2. Listing Databases
+### 2. Listing Databases
 
-### Using PostgreSQL Command
+#### Using PostgreSQL Command
 ```sql
 \l
 ```
 
-### Using SQL Query
+#### Using SQL Query
 ```sql
 SELECT datname AS database_name, 
        pg_size_pretty(pg_database_size(datname)) AS size, 
@@ -38,14 +51,14 @@ SELECT datname AS database_name,
 FROM pg_catalog.pg_database;
 ```
 
-## 3. Switching Databases
+### 3. Switching Databases
 
 ```sql
 \c company_db
 -- You are now connected to database "company_db" as user "demo"
 ```
 
-## 4. Listing Tables in a Database
+### 4. Listing Tables in a Database
 
 ```sql
 \d
@@ -71,15 +84,17 @@ company_db=# \d
 company_db=# -- Shows all tables, views, and sequences in the current database
 ```
 
-## 5. Basic SELECT Queries
+## 🔍 Querying Fundamentals
 
-### Simple SELECT
+### 5. Basic SELECT Queries
+
+#### Simple SELECT
 ```sql
 -- Select all columns from a table
 SELECT * FROM departments;
 
 -- Select specific columns
-     SELECT department_id, department_name, location FROM departments;
+SELECT department_id, department_name, location FROM departments;
 
 -- Select with filtering
 SELECT * FROM employees WHERE department_id = 1;
@@ -153,9 +168,9 @@ company_db=# SELECT * FROM employees ORDER BY salary DESC;
 company_db=# 
 ```
 
-## 6. Working with Subqueries
+### 6. Working with Subqueries
 
-### Subquery in SELECT Clause
+#### Subquery in SELECT Clause
 ```sql
 SELECT department_id, 
        department_name, 
@@ -190,7 +205,7 @@ company_db=#
 **Why is this correct?**
 This query correctly calculates the total monthly salary cost for each department by using a correlated subquery. For each department row in the outer query, the subquery calculates the sum of salaries for employees in that specific department.
 
-### Subquery in WHERE Clause
+#### Subquery in WHERE Clause
 ```sql
 -- Find departments where total employee salary exceeds budget
 SELECT * FROM departments
@@ -216,9 +231,9 @@ company_db(# );
 company_db=# 
 ```
 
-## 7. JOIN Operations
+## 🔗 Advanced JOIN Operations
 
-### INNER JOIN (Default)
+### 7. INNER JOIN (Default)
 ```sql
 -- Get employees with their department names
 SELECT 
@@ -262,7 +277,7 @@ company_db-#     ON emp.department_id = dep.department_id;
 company_db=# 
 ```
 
-### LEFT JOIN Example
+### 8. LEFT JOIN Example
 ```sql
 -- Get all departments and their employees (even if department has no employees)
 SELECT 
@@ -304,7 +319,7 @@ company_db-#     ON dep.department_id = emp.department_id;
 company_db=# 
 ```
 
-### Multiple JOINs
+### 9. Multiple JOINs
 ```sql
 -- Get projects with assigned employees and their departments
 SELECT 
@@ -355,9 +370,9 @@ company_db-#     ON emp.department_id = dep.department_id;
 company_db=# 
 ```
 
-## 8. Aggregation with GROUP BY
+## 📊 Data Aggregation Techniques
 
-### Basic GROUP BY
+### 10. Basic GROUP BY
 ```sql
 -- Count employees per department
 SELECT 
@@ -390,7 +405,7 @@ company_db-# GROUP BY department_id;
 company_db=# 
 ```
 
-### GROUP BY with HAVING
+### 11. GROUP BY with HAVING
 ```sql
 -- Find departments with more than 5 employees
 SELECT 
@@ -417,7 +432,7 @@ company_db-# HAVING COUNT(*) > 5;
 company_db=# 
 ```
 
-## 9. Problem Analysis: Incorrect Data in Complex Query
+## ⚠️ Problem Analysis: Incorrect Data in Complex Query
 
 ### The Problematic Query
 ```sql
@@ -519,7 +534,7 @@ company_db-# ORDER BY dep.department_name ASC;
 company_db=# 
 ```
 
-### Alternative Corrected Query
+### Alternative Corrected Query (Using CTEs)
 ```sql
 -- Using CTE (Common Table Expressions) for clarity
 WITH department_employees AS (
@@ -591,9 +606,9 @@ company_db-# ORDER BY dep.department_name ASC;
 company_db=# 
 ```
 
-## 10. Data Modification Examples
+## 🛠️ Data Modification Operations
 
-### INSERT Data
+### 12. INSERT Data
 ```sql
 -- Use a DO block to allow variables usage
 DO $$
@@ -641,7 +656,7 @@ company_db=# SELECT * FROM employees WHERE job_title like '%Researcher';
 company_db=# 
 ```
 
-### UPDATE Data
+### 13. UPDATE Data
 ```sql
 -- Give all employees in Engineering a 10% raise
 UPDATE employees
@@ -689,9 +704,9 @@ company_db=# SELECT * FROM employees WHERE department_id = 1;
 company_db=# 
 ```
 
-### DELETE Data
+### 14. DELETE Data
 ```sql
--- Delete employees with no department (not possible)
+-- Delete employees with no department (not possible due to foreign key constraints)
 DELETE FROM employees
 WHERE department_id IS NULL;
 
@@ -724,8 +739,9 @@ DELETE 0
 company_db=# 
 ```
 
-## 11. Creating Views
+## 📋 Creating and Using Views
 
+### 15. Creating Views
 ```sql
 -- Create a view for active projects
 CREATE VIEW active_projects AS
@@ -767,8 +783,9 @@ company_db=# SELECT * FROM active_projects WHERE team_size > 3;
 company_db=# 
 ```
 
-## 12. Best Practices
+## 🏆 Best Practices
 
+### 16. SQL Best Practices
 1. **Always use explicit JOINs** instead of implicit joins
 2. **Use table aliases** for readability
 3. **Test queries with LIMIT** before running on full datasets
@@ -776,8 +793,9 @@ company_db=#
 5. **Add comments** to complex queries
 6. **Validate data types** before operations
 
+### 17. Transaction Example
 ```sql
--- Example 1: Promote an employee and adjust their salary
+-- Example: Promote an employee and adjust their salary
 BEGIN;
 
 -- First, get current salary for reference
@@ -795,10 +813,6 @@ WHERE employee_id = 4;
 UPDATE departments 
 SET manager_id = 4 
 WHERE department_id = 1;
-
--- Log the promotion (if you had an audit table)
--- INSERT INTO promotion_log (employee_id, old_title, new_title, raise_percentage, promoted_by, promotion_date)
--- VALUES (4, 'Senior Software Engineer', 'Lead Software Engineer', 15, CURRENT_USER, NOW());
 
 COMMIT;
 
@@ -857,4 +871,10 @@ company_db-# WHERE e.employee_id = 4;
 company_db=# 
 ```
 
-This tutorial covers essential SQL operations from basic navigation to complex querying. Practice with these examples to build confidence in writing and debugging SQL queries.
+## 📚 Summary
+
+This tutorial covers essential SQL operations from basic navigation to complex querying. By practicing with these examples, you'll build confidence in writing and debugging SQL queries, understanding database relationships, and optimizing query performance for real-world applications.
+
+---
+
+_Ready to master SQL? Continue practicing with different datasets and explore advanced features like window functions, stored procedures, and performance tuning!_
